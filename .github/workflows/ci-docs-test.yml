@@ -26,12 +26,17 @@ jobs:
       - name: get-version
         id: get-version
         run: |
-          if [[ "${{ github.ref }}" == refs/heads/release/* || "${{ github.ref }}" == refs/heads/hotfix/* ]]; then
+          if [[ $GITHUB_REF == refs/heads/hotfix/* ]]; then
             BRANCH_NAME=${GITHUB_REF#refs/heads/}
-            export VERSION=${BRANCH_NAME#*/}
-            echo "ds-ver=${VERSION:-99.99.99}" >> "$GITHUB_OUTPUT"
+            VERSION=${BRANCH_NAME#*/}
+            echo "ds-ver=${VERSION:-99.99.99}" >> $GITHUB_OUTPUT
+          elif [[ $GITHUB_REF == refs/heads/release/* ]]; then
+            BRANCH_NAME=${GITHUB_REF#refs/heads/}
+            VERSION=${BRANCH_NAME#*/}
+            echo "ds-ver=${VERSION:-99.99.99}" >> $GITHUB_OUTPUT
           else
             echo "ds-ver=${VERSION:-99.99.99}" >> "$GITHUB_OUTPUT"
+          fi
 
   vagrant-up:
     name: "Test Docs with ${{matrix.name}}"
