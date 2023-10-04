@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
     
   schedule:
-    - cron: '45 10 * * *'  # At 21:00 on Saturday.
+    - cron: '30 5 * * *'  # At 21:00 on Saturday.
 
 jobs:
   get-version:
