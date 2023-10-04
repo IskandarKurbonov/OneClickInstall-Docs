@@ -30,6 +30,8 @@ jobs:
             BRANCH_NAME=${GITHUB_REF#refs/heads/}
             export VERSION=${BRANCH_NAME#*/}
             echo "ds-ver=${VERSION:-99.99.99}" >> "$GITHUB_OUTPUT"
+          else
+            echo "ds-ver=${VERSION:-99.99.99}" >> "$GITHUB_OUTPUT"
 
   vagrant-up:
     name: "Test Docs with ${{matrix.name}}"
