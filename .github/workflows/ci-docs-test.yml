@@ -26,17 +26,13 @@ jobs:
       - name: get-version
         id: get-version
         run: |
-          if [[ $GITHUB_REF == refs/heads/hotfix/* ]]; then
-            BRANCH_NAME=${GITHUB_REF#refs/heads/}
-            VERSION=${BRANCH_NAME#*/}
-            echo "ds-ver=${VERSION:-99.99.99}" >> $GITHUB_OUTPUT
-          elif [[ $GITHUB_REF == refs/heads/release/* ]]; then
-            BRANCH_NAME=${GITHUB_REF#refs/heads/}
-            VERSION=${BRANCH_NAME#*/}
-            echo "ds-ver=${VERSION:-99.99.99}" >> $GITHUB_OUTPUT
+          if curl -s -L -H "Accept: application/vnd.github+json" https://api.github.com/repos/ONLYOFFICE/document-server-package/branches | jq -r '.[].name' | grep -qE '^hotfix/'; then
+            VERSION=$(curl -s -L -H "Accept: application/vnd.github+json" https://api.github.com/repos/ONLYOFFICE/document-server-package/branches | jq -r '.[] | select(.name|test("^release/")) | .name' | awk -F '/v' '{print $2}')  
           else
-            echo "ds-ver=${VERSION:-99.99.99}" >> "$GITHUB_OUTPUT"
+            VERSION=$(curl -s -L -H "Accept: application/vnd.github+json" https://api.github.com/repos/ONLYOFFICE/document-server-package/branches | jq -r '.[] | select(.name|test("^hotfix/")) | .name' | awk -F '/v' '{print $2}')
           fi
+          echo $VERSION
+          echo "ds-ver=${VERSION:-99.99.99}" >> "$GITHUB_OUTPUT"
 
   vagrant-up:
     name: "Test Docs with ${{matrix.name}}"
